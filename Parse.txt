@@ -1,0 +1,83 @@
+void main() async {
+  	runApp(MyApp());
+
+	await Parse().initialize(
+		'LxCqQPISEMxlYExRcgk0yCgWSeYOEMqLgIsC9f6h',
+		'https://parseapi.back4app.com/',
+		clientKey: 'sIVpDekyDLdilSxVhFiMpZC9AgkzIzOlx8rnvyUY',
+		autoSendSessionId: true,
+		debug: true
+	);
+
+			/* Insert */
+
+	// final category = ParseObject('Categories')
+	// 	..set<String>('Title', 'Regatas')
+	// 	..set<int>('Cor', 'veder');
+
+	// final response = await category.save();
+	// print(response.success);
+
+
+			/* Update */
+
+	// final category = ParseObject('Categories')
+	// 	..objectId = 'MnWSV9LqGo'
+	// 	..set<int>('Position', 3);
+
+	// final response = await category.save();
+	// print(response.success);
+
+
+			/* Delete */
+	
+	// final category = ParseObject('Categories')
+	// 	..objectId = 'MnWSV9LqGo';
+
+	// category.delete();
+
+
+
+
+
+			/* GetById */
+
+	// final response = await ParseObject('Categories').getObject('oX7nwpVeDG');
+	// if(response.success) {
+	// 	print(response.result);
+	// }
+
+
+			/* GetAll */
+
+	// final response = await ParseObject('Categories').getAll();
+	// if(response.success) {
+	// 	for(final object in response.result) {
+	// 		print(object);
+	// 	}
+	// }
+
+
+			/* Querys */
+
+	// final query = QueryBuilder(ParseObject('Categories'));
+	// query.whereEqualTo('Position', 2);
+
+	// final response = await query.query();
+
+	// if(response.success) {
+	// 	print(response.result);
+	// }
+
+
+	final query = QueryBuilder(ParseObject('Categories'));
+	query.whereContains('Title', 'Jaquetas');
+	//query.whereEqualTo('Position', 2);
+
+	final response = await query.query();
+
+	if(response.success) {
+		print(response.result);
+	}
+
+}
