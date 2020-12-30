@@ -1,4 +1,7 @@
+import 'package:XLO_mobX/repositories/cep_repository.dart';
+import 'package:XLO_mobX/repositories/ibge_repository.dart';
 import 'package:XLO_mobX/screens/base/base_screen.dart';
+import 'package:XLO_mobX/stores/category_store.dart';
 import 'package:XLO_mobX/stores/page_store.dart';
 import 'package:XLO_mobX/stores/user_manager_store.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +12,7 @@ void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
 	await initalizeParse();
 	setupLocators();
-  	runApp(MyApp());
+	runApp(MyApp());
 }
 
 Future<void> initalizeParse() async {
@@ -25,6 +28,7 @@ Future<void> initalizeParse() async {
 void setupLocators() {
 	GetIt.I.registerSingleton(PageStore());
 	GetIt.I.registerSingleton(UserManagerStore());
+	GetIt.I.registerSingleton(CategoryStore());
 }
 
 class MyApp extends StatelessWidget {
