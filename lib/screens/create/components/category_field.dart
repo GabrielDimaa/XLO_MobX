@@ -12,34 +12,62 @@ class CategoryField extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return Observer(builder: (_) {
-			return ListTile(
-				title: Text("Categoria *",
-					style: TextStyle(
-						fontWeight: FontWeight.w800,
-						color: Colors.grey,
-						fontSize: createStore.category == null ? 18 : 14
-					)
-				),
-				subtitle: createStore.category == null ?
-					null : Text("${createStore.category.description}",
-						style: TextStyle(
-							color: Colors.black, fontSize: 17
-						)
-					),
-				trailing: Icon(Icons.keyboard_arrow_down),
-				onTap: () async {
-					final category = await showDialog(
-						context: context,
-						builder: (_) => CategoryScreen(
-							showAll: false, 
-							selected: createStore.category
-						)
-					);
+			return Column(
+				children: [
+					ListTile(
+						title: Text("Categoria *",
+							style: TextStyle(
+								fontWeight: FontWeight.w800,
+								color: Colors.grey,
+								fontSize: createStore.category == null ? 18 : 14
+							)
+						),
+						subtitle: createStore.category == null ?
+							null : Text("${createStore.category.description}",
+								style: TextStyle(
+									color: Colors.black, fontSize: 17
+								)
+							),
+						trailing: Icon(Icons.keyboard_arrow_down),
+						onTap: () async {
+							final category = await showDialog(
+								context: context,
+								builder: (_) => CategoryScreen(
+									showAll: false, 
+									selected: createStore.category
+								)
+							);
 
-					if(category != null) {
-						createStore.setCategory(category);
-					}
-				}
+							if(category != null) {
+								createStore.setCategory(category);
+							}
+						}
+					),
+					if(createStore.categoryError != null)
+						Container(
+							alignment: Alignment.centerLeft,
+							decoration: BoxDecoration(
+								border: Border(
+									top: BorderSide(color: Colors.red)
+								)
+							),
+							padding: const EdgeInsets.fromLTRB(16, 0, 0, 8),
+							child: Text(createStore.categoryError,
+								style: TextStyle(
+									color: Colors.red,
+									fontSize: 12
+								)
+							)
+						)
+					else
+						Container(
+							decoration: BoxDecoration(
+								border: Border(
+									top: BorderSide(color: Colors.grey[500])
+								)
+							)
+						)
+				]
 			);
 		});
 	}
