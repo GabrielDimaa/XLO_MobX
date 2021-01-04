@@ -41,11 +41,13 @@ class AdRepository {
 			);
 
 			final response = await adObject.save();
-			if(response.success) {
-				return response.result;
-			} else {
+
+			if(!response.success) {
 				return Future.error(ParseErrors.getDescription(response.error.code));
 			}
+
+			return;
+
 		} catch(e) {
 			return Future.error("Falha ao salvar anúncio");
 		}

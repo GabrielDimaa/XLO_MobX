@@ -5,14 +5,31 @@ import 'package:XLO_mobX/screens/create/components/cep_field.dart';
 import 'package:XLO_mobX/screens/create/components/hide_phone_field.dart';
 import 'package:XLO_mobX/screens/create/components/images_field.dart';
 import 'package:XLO_mobX/stores/create_store.dart';
+import 'package:XLO_mobX/stores/page_store.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 
-class CreateScreen extends StatelessWidget {
+class CreateScreen extends StatefulWidget {
+	@override
+	_CreateScreenState createState() => _CreateScreenState();
+}
+
+class _CreateScreenState extends State<CreateScreen> {
 
 	final CreateStore createStore = CreateStore();
+
+	@override
+	void initState() { 
+		super.initState();
+
+		when((_) => createStore.savedAd == true, () {
+			GetIt.I<PageStore>().setPage(0);
+		});
+	}
 
 	@override
 	Widget build(BuildContext context) {

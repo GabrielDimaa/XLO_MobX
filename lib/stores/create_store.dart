@@ -130,6 +130,9 @@ abstract class _CreateStoreBase with Store {
 	String error;
 
 	@observable
+	bool savedAd = false;
+
+	@observable
 	bool showErrors = false;
 
 	@action 
@@ -151,7 +154,8 @@ abstract class _CreateStoreBase with Store {
 		loading = true;
 
 		try {
-			final response = await AdRepository().save(ad);
+			await AdRepository().save(ad);
+			savedAd = true;
 		} catch (e) {
 			error = e;
 		}
