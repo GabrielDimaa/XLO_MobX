@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:XLO_mobX/models/category.dart';
+import 'package:XLO_mobX/models/user.dart';
+import 'package:XLO_mobX/stores/filter_store.dart';
 import 'package:path/path.dart' as path;
 import 'package:XLO_mobX/repositories/table_keys.dart';
 import 'package:XLO_mobX/repositories/parse_errors.dart';
@@ -79,5 +82,71 @@ class AdRepository {
 			return Future.error('Falha ao salvar imagens');
 		}
 	}
+
+  Future<List<Ad>> getHomeAdList({FilterStore filter, String search, Category category,}) async {
+    final queryBuilder =  QueryBuilder<ParseObject>(ParseObject(keyAdTable));
+
+    queryBuilder.includeObject([keyAdOwner, keyAdCategory]);
+
+    queryBuilder.setLimit(20);
+
+    queryBuilder.whereEqualTo(keyAdStatus, AdStatus.ACTIVE.index);
+
+    if(search != null && search.trim().isNotEmpty) {
+      queryBuilder.whereContains(keyAdTitle, search, caseSensitive: false);
+    }
+
+    // Filtro com ParseObject pq a categoria é um ponteiro
+    // o codigo na tabela não é um Id é um ponteiro
+    if(category != null && category.id != '*') {
+      queryBuilder.whereEqualTo(
+        keyAdCategory, 
+        (ParseObject(keyCategoryTable)..set(keyCategoryId, category.id)).toPointer()
+      );
+    }
+
+    switch(filter.orderBy) {
+      case OrderBy.PRICE:
+        queryBuilder.orderByAscending(keyAdPrice);
+        break;
+      case OrderBy.DATE:
+      default: 
+        queryBuilder.orderByDescending(keyAdCreatedAt);
+        break;
+    }
+
+    // onde é maior ou igual a um valor
+    if(filter.minPrice != null && filter.minPrice > 0) {
+      queryBuilder.whereGreaterThanOrEqualsTo(keyAdPrice, filter.minPrice);
+    }
+    if(filter.maxPrice != null && filter.maxPrice > 0) {
+      queryBuilder.whereLessThanOrEqualTo(keyAdPrice, filter.maxPrice);
+    }
+
+    if(filter.vendorType != null && filter.vendorType > 0 && filter.vendorType < (VENDOR_TYPE_PROFESSIONAL | VENDOR_TYPE_PARTICULAR)) {
+      final userQuery = QueryBuilder<ParseUser>(ParseUser.forQuery());
+
+      if(filter.vendorType == VENDOR_TYPE_PARTICULAR) {
+        userQuery.whereEqualTo(keyUserType, UserType.PARTICULAR.index);
+      }
+
+      if(filter.vendorType == VENDOR_TYPE_PROFESSIONAL) {
+        userQuery.whereEqualTo(keyUserType, UserType.PROFESSIONAL.index);
+      }
+
+      queryBuilder.whereMatchesQuery(keyAdOwner, userQuery);
+    }
+
+    final response = await queryBuilder.query();
+
+    if(response.success && response.results != null) {
+      print("RESULT: ${response.results}");
+      return response.results.map((po) => Ad.fromParse(po)).toList();
+    } else if(response.success && response.results == null) {
+      return [];
+    } else {
+      return Future.error(ParseErrors.getDescription(response.error.code));
+    }
+  }
 
 }

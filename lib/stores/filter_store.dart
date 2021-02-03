@@ -1,3 +1,5 @@
+import 'package:XLO_mobX/stores/home_store.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 part 'filter_store.g.dart';
 
@@ -9,6 +11,8 @@ const VENDOR_TYPE_PROFESSIONAL = 1 << 1;
 class FilterStore = _FilterStoreBase with _$FilterStore;
 
 abstract class _FilterStoreBase with Store {
+
+  _FilterStoreBase({this.maxPrice, this.minPrice, this.orderBy = OrderBy.DATE, this.vendorType = VENDOR_TYPE_PARTICULAR});
   
 	@observable
 	OrderBy orderBy = OrderBy.DATE;
@@ -17,13 +21,13 @@ abstract class _FilterStoreBase with Store {
 	void setOrderBy(OrderBy value) => orderBy = value;
 
 	@observable
-	int minPrice = 300;
+	int minPrice;
 
 	@action
 	void setMinPrice(int value) => minPrice = value;
 
 	@observable
-	int maxPrice = 2000;
+	int maxPrice;
 
 	@action
 	void setMaxPrice(int value) => maxPrice = value;
@@ -44,5 +48,21 @@ abstract class _FilterStoreBase with Store {
 	@computed
 	bool get isTypeParticular => vendorType & VENDOR_TYPE_PARTICULAR != 0;
 	bool get isTypeProfessional => vendorType & VENDOR_TYPE_PROFESSIONAL != 0;
+
+  @computed
+  bool get isFormValid => priceError == null;
+
+  void save() {
+    GetIt.I<HomeStore>().setFilter(this);
+  }
+
+  FilterStore clone() {
+    return FilterStore(
+      orderBy: orderBy,
+      maxPrice: maxPrice,
+      minPrice: minPrice,
+      vendorType: vendorType
+    );
+  }
 
 }
