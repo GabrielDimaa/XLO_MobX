@@ -83,11 +83,12 @@ class AdRepository {
 		}
 	}
 
-  Future<List<Ad>> getHomeAdList({FilterStore filter, String search, Category category,}) async {
+  Future<List<Ad>> getHomeAdList({FilterStore filter, String search, Category category, int page}) async {
     final queryBuilder =  QueryBuilder<ParseObject>(ParseObject(keyAdTable));
 
     queryBuilder.includeObject([keyAdOwner, keyAdCategory]);
 
+    queryBuilder.setAmountToSkip(page * 20);
     queryBuilder.setLimit(20);
 
     queryBuilder.whereEqualTo(keyAdStatus, AdStatus.ACTIVE.index);
@@ -140,7 +141,6 @@ class AdRepository {
     final response = await queryBuilder.query();
 
     if(response.success && response.results != null) {
-      print("RESULT: ${response.results}");
       return response.results.map((po) => Ad.fromParse(po)).toList();
     } else if(response.success && response.results == null) {
       return [];

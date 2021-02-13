@@ -8,18 +8,20 @@ part 'home_store.g.dart';
 class HomeStore = _HomeStoreBase with _$HomeStore;
 
 abstract class _HomeStoreBase with Store {
-
   _HomeStoreBase() {
-    autorun((_) async { // quando qualquer um dos observable serem alterados, o autorun roda novamente
+    autorun((_) async {
+      // quando qualquer um dos observable serem alterados, o autorun roda novamente
       try {
         setLoading(true);
+
         final newAds = await AdRepository().getHomeAdList(
           filter: filterStore,
           search: search,
-          category: category
+          category: category,
+          page: page,
         );
-        adList.clear();
-        adList.addAll(newAds);
+
+        addNewAds(newAds);
         setError(null);
         setLoading(false);
       } catch (e) {
@@ -30,18 +32,24 @@ abstract class _HomeStoreBase with Store {
 
   @observable
   ObservableList<Ad> adList = ObservableList<Ad>();
-  
-	@observable
-	String search = "";
 
-	@action
-	void setSearch(String value) => search = value;
+  @observable
+  String search = "";
 
-	@observable
-	Category category;
+  @action
+  void setSearch(String value) {
+    search = value;
+    resetPage();
+  }
 
-	@action
-	void setCategory(Category value) => category = value;
+  @observable
+  Category category;
+
+  @action
+  void setCategory(Category value) {
+    category = value;
+    resetPage();
+  }
 
   @observable
   FilterStore filterStore = FilterStore();
@@ -49,7 +57,10 @@ abstract class _HomeStoreBase with Store {
   FilterStore get clonedFilter => filterStore.clone();
 
   @action
-  void setFilter(FilterStore value) => filterStore = value;
+  void setFilter(FilterStore value) {
+    filterStore = value;
+    resetPage();
+  }
 
   @observable
   String error;
@@ -62,4 +73,31 @@ abstract class _HomeStoreBase with Store {
 
   @action
   void setLoading(bool value) => loading = value;
+
+  @observable
+  int page = 0;
+
+  @observable
+  bool lastPage = false;
+
+  @action
+  void loadNextPage() => page++;
+
+  @action
+  void addNewAds(List<Ad> newAds) {
+    if(newAds.length < 10) lastPage = true;
+    adList.addAll(newAds);
+  }
+
+  @computed
+  int get itemCount => lastPage ? adList.length : adList.length + 1;
+
+  void resetPage() {
+    page = 0;
+    adList.clear();
+    lastPage = false;
+  }
+
+  @computed
+  bool get showProgress => loading && adList.isEmpty;
 }
