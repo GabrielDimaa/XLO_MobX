@@ -1,4 +1,6 @@
 
+import 'package:intl/intl.dart';
+
 extension StringExtension on String {
 
 	bool isEmailValid() {
@@ -8,4 +10,16 @@ extension StringExtension on String {
 		return regex.hasMatch(this);
 	}
 
+}
+
+extension NumberExtension on num {
+  String formattedMoney() {
+    return NumberFormat('R\$###,##0.00', 'pt-BR').format(this);
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  String formattedDate() {
+    return DateFormat('dd/MM/yyyy', 'pt-BR').format(this);
+  }
 }
