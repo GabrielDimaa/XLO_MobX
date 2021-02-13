@@ -1,4 +1,5 @@
 import 'package:XLO_mobX/models/ad.dart';
+import 'package:XLO_mobX/screens/ad/ad_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:XLO_mobX/helpers/extensions.dart';
@@ -12,8 +13,8 @@ class AdTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (_) => AdScreen(ad)));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => AdScreen(ad)));
       },
       child: Container(
         height: 135,
